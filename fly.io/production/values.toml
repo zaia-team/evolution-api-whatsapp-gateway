@@ -1,21 +1,10 @@
 
-app = 'zaia-whatsapp-gateway-prod'
-primary_region = 'atl'
+app = 'zaia-evolution-api-whatsapp-gateway-1-prod'
+primary_region = 'gru'
 
 [build]
   dockerfile = '../../Dockerfile.master'
 
-[env]
-  DEBUG = '1'
-  NODE_ENV = 'production'
-  WHATSAPP_API_HOSTNAME = 'zaia-whatsapp-gateway-prod.internal'
-  WHATSAPP_API_PORT = '3006'
-  WHATSAPP_DEFAULT_ENGINE = 'NOWEB'
-  WHATSAPP_RESTART_ALL_SESSIONS = 'True'
-  WHATSAPP_SWAGGER_USERNAME = 'admin'
-  WAHA_DASHBOARD_ENABLED = 'True'
-  WAHA_DASHBOARD_USERNAME = 'admin'
-  
 [[mounts]]
   source = 'sessions_data'
   destination = '/app/.sessions'
@@ -26,7 +15,7 @@ primary_region = 'atl'
   initial_size='5GB'
 
 [http_service]
-  internal_port = 3006
+  internal_port = 8080
   auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 1
