@@ -25,7 +25,6 @@ COPY ./Docker ./Docker
 
 RUN chmod +x ./Docker/scripts/* && dos2unix ./Docker/scripts/*
 
-# Gerar cliente Prisma explicitamente
 RUN npx prisma generate
 
 RUN ./Docker/scripts/generate_database.sh
