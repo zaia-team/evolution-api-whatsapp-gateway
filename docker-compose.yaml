@@ -3,11 +3,9 @@ services:
     container_name: evolution_api
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.release
     restart: always
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_started
     ports:
@@ -17,44 +15,27 @@ services:
     networks:
       - evolution-net
     env_file:
-      - .env
+      - .env.development
+    environment:
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
 
   redis:
     image: redis:alpine
     networks:
       - evolution-net
     container_name: redis
-    command: redis-server --appendonly yes
+    command: redis-server --appendonly yes --requirepass 74wzfbpv
     volumes:
       - evolution_redis:/data
     ports:
       - 6379:6379
 
-  postgres:
-    container_name: postgres
-    image: postgres:15-alpine
-    networks:
-      - evolution-net
-    command: postgres -c 'max_connections=1000'
-    restart: always
-    ports:
-      - 5432:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: PASSWORD
-      POSTGRES_DB: evolution
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
 volumes:
   evolution_instances:
   evolution_redis:
-  postgres_data:
 
 networks:
   evolution-net:
