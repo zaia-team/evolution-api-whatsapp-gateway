@@ -1,11 +1,15 @@
 services:
   api:
     container_name: evolution_api
-    image: atendai/evolution-api:homolog
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: always
     depends_on:
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     ports:
       - 8080:8080
     volumes:
@@ -14,16 +18,13 @@ services:
       - evolution-net
     env_file:
       - .env
-    expose:
-      - 8080
 
   redis:
-    image: redis:latest
+    image: redis:alpine
     networks:
       - evolution-net
     container_name: redis
-    command: >
-      redis-server --port 6379 --appendonly yes
+    command: redis-server --appendonly yes
     volumes:
       - evolution_redis:/data
     ports:
@@ -31,25 +32,29 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:15
+    image: postgres:15-alpine
     networks:
       - evolution-net
-    command: ["postgres", "-c", "max_connections=1000"]
+    command: postgres -c 'max_connections=1000'
     restart: always
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_PASSWORD=PASSWORD
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: PASSWORD
+      POSTGRES_DB: evolution
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    expose:
-      - 5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   evolution_instances:
   evolution_redis:
   postgres_data:
-
 
 networks:
   evolution-net:

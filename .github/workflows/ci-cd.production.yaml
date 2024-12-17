@@ -1,0 +1,19 @@
+name: CI/CD
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    name: Production Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Fly Setup
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy
+        run: |
+          flyctl deploy --wg=false --no-cache --local-only --config ./fly.io/production/values.toml --access-token='${{ secrets.FLY_API_TOKEN_PRODUCTION }}'
