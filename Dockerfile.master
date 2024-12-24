@@ -3,7 +3,10 @@ FROM node:20-bullseye AS builder
 RUN apt-get update && \
     apt-get install -y git ffmpeg wget curl dos2unix \
     openssl libssl-dev \
-    postgresql postgresql-client
+    postgresql postgresql-client ca-certificates
+
+RUN mkdir -p /etc/ssl/certs && \
+    update-ca-certificates
 
 WORKDIR /evolution
 
@@ -22,7 +25,6 @@ COPY ./Docker ./Docker
 
 RUN chmod +x ./Docker/scripts/* && dos2unix ./Docker/scripts/*
 
-# Gerar cliente Prisma explicitamente
 RUN npx prisma generate
 
 RUN ./Docker/scripts/generate_database.sh
@@ -33,9 +35,12 @@ FROM node:20-bullseye AS final
 
 RUN apt-get update && \
     apt-get install -y tzdata ffmpeg openssl libssl-dev \
-    postgresql-client
+    postgresql-client ca-certificates && \
+    update-ca-certificates
 
 ENV TZ=America/Sao_Paulo
+ENV NODE_TLS_REJECT_UNAUTHORIZED=0
+ENV DOCKER_ENV=true
 
 WORKDIR /evolution
 
@@ -50,8 +55,6 @@ COPY --from=builder /evolution/.env ./.env
 COPY --from=builder /evolution/Docker ./Docker
 COPY --from=builder /evolution/runWithProvider.js ./runWithProvider.js
 COPY --from=builder /evolution/tsup.config.ts ./tsup.config.ts
-
-ENV DOCKER_ENV=true
 
 EXPOSE 8080
 
