@@ -3,7 +3,7 @@ services:
     container_name: evolution_api
     build:
       context: .
-      dockerfile: Dockerfile.release
+      dockerfile: Dockerfile.master
     restart: always
     depends_on:
       redis:
@@ -15,7 +15,7 @@ services:
     networks:
       - evolution-net
     env_file:
-      - .env.development
+      - .env.production
     environment:
       - NODE_TLS_REJECT_UNAUTHORIZED=0
     dns:
