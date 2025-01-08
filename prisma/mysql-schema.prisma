@@ -11,8 +11,6 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_CONNECTION_URI")
-  connection_limit = 20
-  pool_timeout = 30
 }
 
 enum InstanceConnectionStatus {
