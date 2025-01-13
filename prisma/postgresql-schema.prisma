@@ -11,6 +11,8 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_CONNECTION_URI")
+  connectionLimit = 20
+  poolTimeout = 30
 }
 
 enum InstanceConnectionStatus {
