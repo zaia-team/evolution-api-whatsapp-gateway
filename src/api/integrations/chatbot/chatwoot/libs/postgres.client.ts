@@ -6,40 +6,44 @@ const { Pool } = postgresql;
 
 class Postgres {
   private logger = new Logger('Postgres');
-  private pool;
+  private pool: postgresql.Pool | null = null;
   private connected = false;
 
-  getConnection(connectionString: string) {
-    if (this.connected) {
+  getConnection(connectionString: string): postgresql.Pool | null {
+    if (this.connected && this.pool) {
       return this.pool;
-    } else {
+    }
+
+    try {
       this.pool = new Pool({
         connectionString,
         ssl: {
           rejectUnauthorized: false,
         },
+        max: 50,
       });
 
-      this.pool.on('error', () => {
-        this.logger.error('postgres disconnected');
+      this.pool.on('error', (err) => {
+        this.logger.error(`Postgres pool error: ${err.message}`);
         this.connected = false;
       });
 
-      try {
+      this.pool.on('connect', () => {
         this.connected = true;
-      } catch (e) {
-        this.connected = false;
-        this.logger.error('postgres connect exception caught: ' + e);
-        return null;
-      }
+        this.logger.log('New client connected to postgres pool');
+      });
 
+      this.connected = true;
       return this.pool;
+    } catch (error) {
+      this.connected = false;
+      this.logger.error(`Postgres connect exception caught: ${error}`);
+      return null;
     }
   }
 
-  getChatwootConnection() {
+  getChatwootConnection(): postgresql.Pool | null {
     const uri = configService.get<Chatwoot>('CHATWOOT').IMPORT.DATABASE.CONNECTION.URI;
-
     return this.getConnection(uri);
   }
 }
