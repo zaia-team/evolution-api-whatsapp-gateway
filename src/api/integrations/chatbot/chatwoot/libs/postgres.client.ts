@@ -42,19 +42,6 @@ class Postgres {
     }
   }
 
-  async closeConnection(): Promise<void> {
-    if (this.pool) {
-      try {
-        await this.pool.end();
-        this.connected = false;
-        this.pool = null;
-        this.logger.log('Postgres connection pool closed');
-      } catch (error) {
-        this.logger.error(`Error closing postgres connection: ${error}`);
-      }
-    }
-  }
-
   getChatwootConnection(): postgresql.Pool | null {
     const uri = configService.get<Chatwoot>('CHATWOOT').IMPORT.DATABASE.CONNECTION.URI;
     return this.getConnection(uri);
@@ -62,13 +49,3 @@ class Postgres {
 }
 
 export const postgresClient = new Postgres();
-
-process.on('SIGINT', async () => {
-  await postgresClient.closeConnection();
-  process.exit(0);
-});
-
-process.on('SIGTERM', async () => {
-  await postgresClient.closeConnection();
-  process.exit(0);
-});
