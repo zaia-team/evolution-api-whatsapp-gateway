@@ -65,7 +65,6 @@ class Postgres {
 
 export const postgresClient = new Postgres();
 
-// Add cleanup on process termination
 process.on('SIGINT', async () => {
   await postgresClient.closeConnection();
   process.exit(0);
