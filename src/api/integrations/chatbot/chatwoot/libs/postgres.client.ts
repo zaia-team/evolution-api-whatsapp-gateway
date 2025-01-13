@@ -20,9 +20,7 @@ class Postgres {
         ssl: {
           rejectUnauthorized: false,
         },
-        max: 20,
-        idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2000,
+        max: 50,
       });
 
       this.pool.on('error', (err) => {
