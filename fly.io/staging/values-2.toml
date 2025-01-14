@@ -1,0 +1,27 @@
+
+app = 'z-evolution-api-whatsapp-gateway-2-staging'
+primary_region = 'gru'
+
+[build]
+  dockerfile = '../../Dockerfile.release'
+
+[[mounts]]
+  source = 'sessions_data'
+  destination = '/app/.sessions'
+  snapshot_retention = 15
+  auto_extend_size_threshold = 99
+  auto_extend_size_increment = '1GB'
+  auto_extend_size_limit = '100GB'
+
+
+[http_service]
+  internal_port = 8080
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
