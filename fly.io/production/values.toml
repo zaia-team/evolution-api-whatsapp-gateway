@@ -22,6 +22,6 @@ primary_region = 'gru'
   processes = ['app']
 
 [[vm]]
-  memory = '16gb'
+  memory = '8gb'
   cpu_kind = 'performance'
   cpus = 4
