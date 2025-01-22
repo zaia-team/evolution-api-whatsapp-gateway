@@ -24,4 +24,4 @@ primary_region = 'gru'
 [[vm]]
   memory = '8gb'
   cpu_kind = 'performance'
-  cpus = 2
+  cpus = 4

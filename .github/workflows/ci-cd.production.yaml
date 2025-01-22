@@ -17,4 +17,3 @@ jobs:
       - name: Deploy
         run: |
           flyctl deploy --wg=false --no-cache --local-only --config ./fly.io/production/values.toml --access-token='${{ secrets.FLY_API_TOKEN_PRODUCTION }}'
-          flyctl deploy --wg=false --no-cache --local-only --config ./fly.io/production/values-2.toml --access-token='${{ secrets.FLY_API_TOKEN_2_PRODUCTION }}'
