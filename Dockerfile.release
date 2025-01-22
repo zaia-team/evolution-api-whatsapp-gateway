@@ -1,4 +1,4 @@
-FROM node:20-bullseye AS builder
+FROM node:20-alpine AS builder
 
 RUN apt-get update && \
     apt-get install -y git ffmpeg wget curl dos2unix \
@@ -21,6 +21,7 @@ COPY ./manager ./manager
 COPY ./.env.development ./.env
 COPY ./runWithProvider.js ./
 COPY ./tsup.config.ts ./
+
 COPY ./Docker ./Docker
 
 RUN chmod +x ./Docker/scripts/* && dos2unix ./Docker/scripts/*
@@ -31,7 +32,7 @@ RUN ./Docker/scripts/generate_database.sh
 
 RUN npm run build
 
-FROM node:20-bullseye AS final
+FROM node:20-alpine AS final
 
 RUN apt-get update && \
     apt-get install -y tzdata ffmpeg openssl libssl-dev \
@@ -54,6 +55,8 @@ COPY --from=builder /evolution/.env ./.env
 COPY --from=builder /evolution/Docker ./Docker
 COPY --from=builder /evolution/runWithProvider.js ./runWithProvider.js
 COPY --from=builder /evolution/tsup.config.ts ./tsup.config.ts
+
+ENV DOCKER_ENV=true
 
 EXPOSE 8080
 
